@@ -96,14 +96,6 @@
     .dm-btn { padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); }
     .dm-btn b { display: block; font-size: 14px; margin-bottom: 4px; }
     .dm-btn span { color: var(--muted); font-size: 13px; }
-    .status-card { display: grid; grid-template-columns: 1fr auto; gap: 25px; align-items: center; padding: 25px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); }
-    .status-main { display: flex; align-items: center; gap: 12px; }
-    .status-indicator { width: 12px; height: 12px; border-radius: 50%; background: #d5a629; box-shadow: 0 0 0 5px #fff6d9; }
-    .status-indicator.online { background: var(--green); box-shadow: 0 0 0 5px #e3f6eb; }
-    .status-indicator.offline { background: var(--red); box-shadow: 0 0 0 5px #fbe8e8; }
-    .status-title { font-weight: 780; }
-    .status-text { color: var(--muted); font-size: 13px; }
-    .status-meta { margin-top: 14px; color: #8a93a2; font-size: 12px; }
     .legal-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
     .legal-card { padding: 25px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); }
     .legal-card a { color: var(--blue-dark); text-decoration: none; }
@@ -132,8 +124,7 @@
       .hero-copy { font-size: 16px; }
       section { padding: 58px 0; }
       .stats { grid-template-columns: 1fr; }
-      .status-card, .legal-grid { grid-template-columns: 1fr; }
-      .status-card .button { width: 100%; }
+      .legal-grid { grid-template-columns: 1fr; }
       .command { grid-template-columns: 1fr; gap: 7px; }
       .footer-row { flex-direction: column; }
     }
@@ -153,7 +144,7 @@
         <a href="#features">Онцлог</a>
         <a href="#commands">Команд</a>
         <a href="#dm">DM товч</a>
-        <a href="#status">Status</a>
+        <a href="status.html">Status</a>
         <a href="#legal">Дүрэм</a>
       </nav>
       <div style="display:flex;gap:8px;align-items:center">
@@ -275,23 +266,6 @@
       </div>
     </section>
 
-    <section id="status">
-      <div class="wrap">
-        <div class="section-head">
-          <h2>Live status</h2>
-          <p>Bot-ын hosting status-ийг таны өгсөн endpoint-оос шалгана. Хариу ирэхгүй үед доорх линкээр гаднах status хуудсыг шууд нээж шалгаж болно.</p>
-        </div>
-        <div class="status-card">
-          <div>
-            <div class="status-main"><span id="status-dot" class="status-indicator"></span><span id="status-title" class="status-title">Шалгаж байна…</span></div>
-            <div id="status-text" class="status-text">Hosting endpoint-тэй холбогдож байна.</div>
-            <div id="status-meta" class="status-meta">Endpoint: o3nua77ki9.apps.bot-hosting.cloud</div>
-          </div>
-          <a class="button ghost" href="https://o3nua77ki9.apps.bot-hosting.cloud" target="_blank" rel="noopener">Status site ↗</a>
-        </div>
-      </div>
-    </section>
-
     <section id="legal" class="soft">
       <div class="wrap">
         <div class="section-head">
@@ -323,39 +297,5 @@
     </div>
   </footer>
 
-  <script>
-    const endpoint = "https://o3nua77ki9.apps.bot-hosting.cloud";
-    const dot = document.getElementById("status-dot");
-    const title = document.getElementById("status-title");
-    const text = document.getElementById("status-text");
-    const meta = document.getElementById("status-meta");
-
-    async function checkStatus() {
-      const started = performance.now();
-      try {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 8000);
-        const response = await fetch(endpoint, { method: "GET", cache: "no-store", signal: controller.signal });
-        clearTimeout(timer);
-        if (response.ok) {
-          dot.className = "status-indicator online";
-          title.textContent = "Online";
-          text.textContent = "Hosting endpoint хариу өгч байна.";
-        } else {
-          dot.className = "status-indicator offline";
-          title.textContent = "Түр unavailable";
-          text.textContent = "Endpoint хариу өгсөн ч HTTP " + response.status + " төлөвтэй байна.";
-        }
-        meta.textContent = "Шалгасан: " + new Date().toLocaleTimeString("mn-MN") + " · " + Math.round(performance.now() - started) + "ms";
-      } catch (error) {
-        dot.className = "status-indicator offline";
-        title.textContent = "Offline эсвэл шалгах боломжгүй";
-        text.textContent = "Hosting endpoint одоогоор хариу өгөөгүй байна. Status site-ийг шууд нээж шалгана уу.";
-        meta.textContent = "Шалгасан: " + new Date().toLocaleTimeString("mn-MN") + " · " + endpoint;
-      }
-    }
-    checkStatus();
-    setInterval(checkStatus, 60000);
-  </script>
 </body>
 </html>

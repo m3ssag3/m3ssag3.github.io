@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="mn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#132d80" />
+  <title>Status — MessAge</title>
+  <style>
+    :root {
+      --deep: #0a1747;
+      --blue: #173ba9;
+      --blue-mid: #2457e6;
+      --blue-light: #4f83ff;
+      --line: rgba(255,255,255,.14);
+      --card: rgba(255,255,255,.06);
+      --ink: #eef3ff;
+      --muted: #a9bdec;
+      --green: #34d399;
+      --amber: #f0b93a;
+      --red: #ff6b6b;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 0%, rgba(79,131,255,.35), transparent 45%),
+        radial-gradient(circle at 90% 20%, rgba(36,87,230,.28), transparent 40%),
+        linear-gradient(160deg, #0a1747, #132d80 55%, #1a3ea3);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--blue-light); }
+    .wrap { width: min(760px, calc(100% - 40px)); margin: 0 auto; }
+    header { padding: 22px 0; border-bottom: 1px solid var(--line); }
+    nav { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); font-weight: 800; letter-spacing: -.03em; }
+    .mark { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; background: rgba(255,255,255,.14); font-size: 15px; }
+    .navlinks { display: flex; gap: 18px; font-size: 13px; }
+    .navlinks a { color: var(--muted); text-decoration: none; }
+    .navlinks a:hover { color: var(--ink); }
+    main { padding: 56px 0 70px; }
+    .eyebrow { margin: 0 0 12px; color: #9db4f5; font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    h1 { margin: 0 0 12px; font-size: clamp(34px, 6vw, 52px); line-height: 1.02; letter-spacing: -.04em; }
+    .lede { max-width: 540px; margin: 0 0 40px; color: var(--muted); font-size: 15px; }
+    .status-card { padding: 28px; border: 1px solid var(--line); border-radius: 20px; background: var(--card); backdrop-filter: blur(10px); }
+    .status-main { display: flex; align-items: center; gap: 14px; }
+    .status-indicator { width: 13px; height: 13px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 0 6px rgba(240,185,58,.18); flex-shrink: 0; }
+    .status-indicator.online { background: var(--green); box-shadow: 0 0 0 6px rgba(52,211,153,.18); }
+    .status-indicator.offline { background: var(--red); box-shadow: 0 0 0 6px rgba(255,107,107,.18); }
+    .status-title { font-weight: 780; font-size: 17px; }
+    .status-text { margin-top: 4px; color: var(--muted); font-size: 13.5px; }
+    .status-meta { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); color: #8ba0da; font-size: 12px; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+    .status-meta b { color: var(--muted); font-weight: 600; }
+    .refresh-btn { margin-top: 22px; display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 16px; background: rgba(255,255,255,.05); color: var(--ink); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; transition: .2s ease; }
+    .refresh-btn:hover { background: rgba(255,255,255,.12); }
+    .refresh-btn:disabled { opacity: .5; cursor: default; }
+    .note { margin-top: 34px; padding: 18px 20px; border-radius: 14px; background: rgba(255,255,255,.05); border: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+    footer { padding: 30px 0 40px; border-top: 1px solid var(--line); }
+    .footer-row { display: flex; justify-content: space-between; gap: 18px; color: var(--muted); font-size: 13px; flex-wrap: wrap; }
+    .footer-links { display: flex; gap: 16px; }
+    .footer-links a { text-decoration: none; }
+    .footer-links a:hover { color: var(--ink); }
+    @media (max-width: 560px) {
+      .navlinks { display: none; }
+      .status-card { padding: 22px; }
+      .footer-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <a class="brand" href="index.html"><span class="mark">➤</span><span>MessAge</span></a>
+        <div class="navlinks"><a href="index.html">Home</a><a href="messsage-terms.html">Terms</a><a href="messsage-privacy.html">Privacy</a></div>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <p class="eyebrow">MessAge / Status</p>
+    <h1>Hosting status</h1>
+    <p class="lede">MessAge-ийн bot hosting endpoint одоогийн байдлаар хариу өгч байгаа эсэхийг энэ хуудаснаас шалгана.</p>
+
+    <div class="status-card">
+      <div class="status-main">
+        <span id="status-dot" class="status-indicator"></span>
+        <div>
+          <div id="status-title" class="status-title">Шалгаж байна…</div>
+          <div id="status-text" class="status-text">Hosting endpoint-тэй холбогдож байна.</div>
+        </div>
+      </div>
+      <div class="status-meta">
+        <span><b>Endpoint:</b> o3nua77ki9.apps.bot-hosting.cloud:25058</span>
+        <span id="status-latency"><b>Хариу хугацаа:</b> —</span>
+        <span id="status-checked"><b>Сүүлд шалгасан:</b> —</span>
+      </div>
+      <button id="refresh-btn" class="refresh-btn" type="button" onclick="checkStatus()">↻ Дахин шалгах</button>
+    </div>
+
+    <div class="note">Энэ хуудас зөвхөн endpoint онлайн эсэхийг (up/down) шалгадаг бөгөөд bot-ын dashboard, лог, database руу хандах эрх өгдөггүй. 60 секунд тутам автоматаар шинэчлэгдэнэ.</div>
+  </main>
+  <footer>
+    <div class="wrap footer-row">
+      <span>© 2026 MessAge</span>
+      <div class="footer-links">
+        <a href="index.html">Home</a><a href="messsage-terms.html">Terms</a><a href="messsage-privacy.html">Privacy</a><a href="mailto:messagesupportteam@gmail.com">Email</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const ENDPOINT = "https://o3nua77ki9.apps.bot-hosting.cloud:25058";
+    const dot = document.getElementById("status-dot");
+    const title = document.getElementById("status-title");
+    const text = document.getElementById("status-text");
+    const latency = document.getElementById("status-latency");
+    const checked = document.getElementById("status-checked");
+    const btn = document.getElementById("refresh-btn");
+
+    async function checkStatus() {
+      btn.disabled = true;
+      const started = performance.now();
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 8000);
+        const response = await fetch(ENDPOINT, { method: "GET", cache: "no-store", signal: controller.signal });
+        clearTimeout(timer);
+        const ms = Math.round(performance.now() - started);
+        if (response.ok) {
+          dot.className = "status-indicator online";
+          title.textContent = "Online";
+          text.textContent = "Hosting endpoint хариу өгч байна.";
+        } else {
+          dot.className = "status-indicator offline";
+          title.textContent = "Түр unavailable";
+          text.textContent = "Endpoint хариу өгсөн ч HTTP " + response.status + " төлөвтэй байна.";
+        }
+        latency.innerHTML = "<b>Хариу хугацаа:</b> " + ms + "ms";
+      } catch (error) {
+        dot.className = "status-indicator offline";
+        title.textContent = "Offline эсвэл шалгах боломжгүй";
+        text.textContent = "Hosting endpoint одоогоор хариу өгөөгүй байна.";
+        latency.innerHTML = "<b>Хариу хугацаа:</b> —";
+      } finally {
+        checked.innerHTML = "<b>Сүүлд шалгасан:</b> " + new Date().toLocaleTimeString("mn-MN");
+        btn.disabled = false;
+      }
+    }
+    checkStatus();
+    setInterval(checkStatus, 60000);
+  </script>
+</body>
+</html>
