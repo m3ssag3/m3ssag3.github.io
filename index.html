@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UB Smart Bus - Google Maps Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        #map {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .status-card {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+            min-width: 260px;
+        }
+
+        .status-card h2 {
+            font-size: 16px;
+            color: #1a73e8;
+            margin-bottom: 8px;
+        }
+
+        .status-card p {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 4px;
+        }
+
+        .btn-refresh {
+            margin-top: 10px;
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .btn-refresh:hover {
+            background-color: #1557b0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="status-card">
+        <h2>🚌 UB Bus Tracker</h2>
+        <p id="bus-count">Автобусны тоо: Уншиж байна...</p>
+        <p id="last-update">Сүүлийн шинэчлэлт: -</p>
+        <button class="btn-refresh" onclick="fetchBusLocations()">Шинэчлэх</button>
+    </div>
+
+    <div id="map"></div>
+
+    <!-- Google Maps API (YOUR_GOOGLE_MAPS_API_KEY хэсэгт өөрийн key-ээ орлуулна) -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async defer></script>
+
+    <script>
+        let map;
+        let busMarkers = {};
+
+        // Улаанбаатар хотын төв солбицол
+        const UB_CENTER = { lat: 47.9188, lng: 106.9176 };
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 13,
+                center: UB_CENTER,
+                disableDefaultUI: false,
+                zoomControl: true,
+            });
+
+            // Газрын зураг ачаалсны дараа датагаа татна
+            fetchBusLocations();
+
+            // 10 секунд тутамд автобусны байршлыг автоматаар шинэчлэх
+            setInterval(fetchBusLocations, 10000);
+        }
+
+        async function fetchBusLocations() {
+            try {
+                /* 
+                   БОДИТ АПИ ХОЛБОХДООР:
+                   Броузерын CORS хязгаарлалтаас болоод app.uscc.mn рүү шууд хүсэлт шидэх боломжгүй.
+                   Өөрийн Python / Node.js Backend эсвэл CORS Proxy URL-аараа солих шаардлагатай.
+                   
+                   const PROXY_URL = "http://localhost:5000/api/buses";
+                   const response = await fetch(PROXY_URL);
+                   const busData = await response.json();
+                */
+
+                // Туршилтын дээж дата (Mock Data)
+                const busData = [
+                    { id: "BUS-001", routeName: "Ч:1", lat: 47.9190, lng: 106.9170, speed: 25 },
+                    { id: "BUS-002", routeName: "Ч:1", lat: 47.9150, lng: 106.9250, speed: 18 },
+                    { id: "BUS-003", routeName: "Ч:2", lat: 47.9220, lng: 106.9050, speed: 30 },
+                    { id: "BUS-004", routeName: "Ч:5", lat: 47.9080, lng: 106.9300, speed: 0 }
+                ];
+
+                updateMarkers(busData);
+
+                document.getElementById("bus-count").innerText = `Идэвхтэй автобус: ${busData.length}`;
+                document.getElementById("last-update").innerText = `Сүүлийн шинэчлэлт: ${new Date().toLocaleTimeString()}`;
+
+            } catch (error) {
+                console.error("Дата татахад алдаа гарлаа:", error);
+                document.getElementById("bus-count").innerText = "Дата авахад алдаа гарлаа";
+            }
+        }
+
+        function updateMarkers(buses) {
+            buses.forEach(bus => {
+                const position = { lat: bus.lat, lng: bus.lng };
+
+                if (busMarkers[bus.id]) {
+                    // Харгалзах автобус байвал байршлыг нь шинэчилнэ
+                    busMarkers[bus.id].setPosition(position);
+                } else {
+                    // Шинэ маркер үүсгэх
+                    const marker = new google.maps.Marker({
+                        position: position,
+                        map: map,
+                        title: `${bus.routeName} (${bus.id})`,
+                        icon: {
+                            url: "https://maps.google.com/mapfiles/kml/shapes/bus.png",
+                            scaledSize: new google.maps.Size(32, 32)
+                        }
+                    });
+
+                    // Маркер дээр дарахад мэдээлэл харуулах
+                    const infoWindow = new google.maps.InfoWindow({
+                        content: `
+                            <div style="padding: 5px;">
+                                <h3>${bus.routeName}</h3>
+                                <p><strong>Автобус ID:</strong> ${bus.id}</p>
+                                <p><strong>Хурд:</strong> ${bus.speed} км/ц</p>
+                            </div>
+                        `
+                    });
+
+                    marker.addListener("click", () => {
+                        infoWindow.open(map, marker);
+                    });
+
+                    busMarkers[bus.id] = marker;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+
