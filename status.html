@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="mn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#06070d" />
+  <title>Status — MessAge</title>
+  <style>
+    :root {
+      --bg: #06070d;
+      --bg-soft: #0a0d1a;
+      --card: #10131f;
+      --card-hi: #151a2c;
+      --line: rgba(255,255,255,.08);
+      --line-hi: rgba(255,255,255,.14);
+      --ink: #f2f4fb;
+      --muted: #8d99bd;
+      --muted-dim: #667096;
+      --accent: #5b74f5;
+      --accent-dark: #3d52d6;
+      --accent-soft: rgba(91,116,245,.14);
+      --green: #34d399;
+      --amber: #f0b93a;
+      --red: #ff6b6b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: #a9b7ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { width: min(820px, calc(100% - 34px)); margin: 0 auto; }
+    header { padding: 22px 0; border-bottom: 1px solid var(--line); background: rgba(6,7,13,.86); backdrop-filter: blur(14px); position: sticky; top: 0; z-index: 5; }
+    nav { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); font-weight: 760; letter-spacing: -.025em; text-decoration: none; }
+    .brand:hover { text-decoration: none; }
+    .mark { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 9px; color: white; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); font-size: 13px; font-weight: 800; }
+    .navlinks { display: flex; gap: 18px; font-size: 13px; }
+    .navlinks a { color: var(--muted); }
+    .navlinks a:hover { color: var(--ink); text-decoration: none; }
+    main { padding: 50px 0 70px; }
+    .eyebrow { margin: 0 0 12px; color: var(--muted-dim); font-size: 12px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+    h1 { margin: 0 0 10px; font-size: clamp(30px, 5.5vw, 44px); line-height: 1.05; letter-spacing: -.03em; }
+    .lede { max-width: 540px; margin: 0 0 34px; color: var(--muted); font-size: 14.5px; }
+
+    .summary-card { display: flex; align-items: center; gap: 14px; padding: 22px 24px; border-radius: 18px; border: 1px solid var(--line-hi); background: var(--card); margin-bottom: 22px; }
+    .summary-icon { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-size: 19px; flex-shrink: 0; background: rgba(52,211,153,.14); color: var(--green); }
+    .summary-icon.warn { background: rgba(240,185,58,.14); color: var(--amber); }
+    .summary-icon.down { background: rgba(255,107,107,.14); color: var(--red); }
+    .summary-text b { display: block; font-size: 17px; font-weight: 760; }
+    .summary-text span { color: var(--muted); font-size: 13px; }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 26px; }
+    .stat-box { padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); text-align: center; }
+    .stat-box b { display: block; font-size: 21px; letter-spacing: -.02em; }
+    .stat-box span { color: var(--muted-dim); font-size: 11.5px; }
+
+    .component { border: 1px solid var(--line); border-radius: 16px; background: var(--card); padding: 18px 20px; margin-bottom: 12px; }
+    .component-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .component-name { font-weight: 660; font-size: 14.5px; display: flex; align-items: center; gap: 9px; }
+    .component-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+    .component-dot.down { background: var(--red); }
+    .component-dot.warn { background: var(--amber); }
+    .component-state { font-size: 12.5px; font-weight: 660; color: var(--green); }
+    .component-state.down { color: var(--red); }
+    .component-state.warn { color: var(--amber); }
+    .component-sub { margin-top: 10px; color: var(--muted-dim); font-size: 12px; }
+
+    .history { margin-top: 12px; display: flex; gap: 2px; height: 26px; align-items: flex-end; }
+    .history .bar { flex: 1; min-width: 2px; border-radius: 2px; background: var(--line); height: 100%; }
+    .history .bar.ok { background: var(--green); }
+    .history .bar.fail { background: var(--red); }
+    .history-labels { display: flex; justify-content: space-between; margin-top: 6px; color: var(--muted-dim); font-size: 11px; }
+
+    .refresh-btn { margin-top: 22px; display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line-hi); border-radius: 10px; padding: 10px 16px; background: var(--card); color: var(--ink); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; transition: .2s ease; }
+    .refresh-btn:hover { background: var(--card-hi); }
+    .refresh-btn:disabled { opacity: .5; cursor: default; }
+
+    .note { margin-top: 30px; padding: 16px 18px; border-radius: 14px; background: var(--card); border: 1px solid var(--line); color: var(--muted-dim); font-size: 12.5px; }
+
+    footer { padding: 28px 0 40px; border-top: 1px solid var(--line); }
+    .footer-row { display: flex; justify-content: space-between; gap: 18px; color: var(--muted-dim); font-size: 13px; flex-wrap: wrap; }
+    .footer-links { display: flex; gap: 16px; flex-wrap: wrap; }
+    .footer-links a { color: var(--muted-dim); }
+    .footer-links a:hover { color: var(--ink); text-decoration: none; }
+
+    @media (max-width: 560px) {
+      .navlinks { display: none; }
+      .stat-grid { grid-template-columns: 1fr; }
+      .summary-card { padding: 18px; }
+      .footer-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <a class="brand" href="index.html"><span class="mark">➤</span><span>MessAge</span></a>
+        <div class="navlinks"><a href="index.html">Home</a><a href="tos.html">Terms</a><a href="privacy.html">Privacy</a><a href="changelog.html">Changelog</a></div>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <p class="eyebrow">MessAge / Status</p>
+    <h1>Bot status</h1>
+    <p class="lede">MessAge-ийн hosting endpoint одоогийн байдлаар хариу өгч байгаа эсэхийг шалгаж, latency болон энэ хуудас нээлттэй байх хугацаанд хийсэн шалгалтуудын түүхийг харуулна.</p>
+
+    <div id="summary-card" class="summary-card">
+      <div id="summary-icon" class="summary-icon">✓</div>
+      <div class="summary-text">
+        <b id="summary-title">Шалгаж байна…</b>
+        <span id="summary-sub">Endpoint-той холбогдож байна.</span>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-box"><b>10+</b><span>Discord сервер</span></div>
+      <div class="stat-box"><b id="stat-latency">—</b><span>Latency</span></div>
+      <div class="stat-box"><b id="stat-uptime">—</b><span>Session uptime</span></div>
+    </div>
+
+    <div class="component">
+      <div class="component-head">
+        <div class="component-name"><span id="dot-bot" class="component-dot"></span> Discord Bot</div>
+        <div id="state-bot" class="component-state">Шалгаж байна…</div>
+      </div>
+      <div class="component-sub">MessAge-ийн Discord gateway холболт. Discord-ийн ерөнхий сервис зогсонги байдал <a href="https://discordstatus.com" target="_blank" rel="noopener">discordstatus.com</a>-оос харагдана.</div>
+    </div>
+
+    <div class="component">
+      <div class="component-head">
+        <div class="component-name"><span id="dot-host" class="component-dot"></span> Hosting endpoint</div>
+        <div id="state-host" class="component-state">Шалгаж байна…</div>
+      </div>
+      <div class="component-sub" id="host-sub">Endpoint шалгаж байна…</div>
+      <div id="history" class="history"></div>
+      <div class="history-labels"><span id="history-start">эхлэл</span><span>одоо</span></div>
+    </div>
+
+    <button id="refresh-btn" class="refresh-btn" type="button" onclick="runCheck(true)">↻ Дахин шалгах</button>
+
+    <div class="note">Энэ хуудас зөвхөн endpoint хариу өгч байгаа эсэхийг (up/down) шалгадаг бөгөөд bot-ын dashboard, лог, database руу хандах эрх өгдөггүй. History нь энэ хуудсыг нээснээс хойших шалгалтуудыг харуулах бөгөөд 90 хоногийн түүхэн статистик биш. 60 секунд тутам автоматаар шинэчлэгдэнэ.</div>
+  </main>
+  <footer>
+    <div class="wrap footer-row">
+      <span>© 2026 MessAge</span>
+      <div class="footer-links">
+        <a href="index.html">Home</a><a href="changelog.html">Changelog</a><a href="tos.html">Terms</a><a href="privacy.html">Privacy</a><a href="mailto:messagesupportteam@gmail.com">Email</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const ENDPOINT = "https://o3nua77ki9.apps.bot-hosting.cloud";
+    const checks = []; // { ok: bool, ms: number, t: Date }
+
+    const els = {
+      summaryCard: document.getElementById("summary-card"),
+      summaryIcon: document.getElementById("summary-icon"),
+      summaryTitle: document.getElementById("summary-title"),
+      summarySub: document.getElementById("summary-sub"),
+      statLatency: document.getElementById("stat-latency"),
+      statUptime: document.getElementById("stat-uptime"),
+      dotBot: document.getElementById("dot-bot"),
+      stateBot: document.getElementById("state-bot"),
+      dotHost: document.getElementById("dot-host"),
+      stateHost: document.getElementById("state-host"),
+      hostSub: document.getElementById("host-sub"),
+      history: document.getElementById("history"),
+      historyStart: document.getElementById("history-start"),
+      btn: document.getElementById("refresh-btn"),
+    };
+
+    function renderHistory() {
+      els.history.innerHTML = "";
+      checks.slice(-60).forEach(c => {
+        const bar = document.createElement("div");
+        bar.className = "bar " + (c.ok ? "ok" : "fail");
+        bar.title = c.t.toLocaleTimeString("mn-MN") + " · " + (c.ok ? "OK" : "Алдаа");
+        els.history.appendChild(bar);
+      });
+      if (checks.length) {
+        els.historyStart.textContent = checks[0].t.toLocaleTimeString("mn-MN");
+        const okCount = checks.filter(c => c.ok).length;
+        els.statUptime.textContent = Math.round((okCount / checks.length) * 100) + "%";
+      }
+    }
+
+    function setState(ok, ms) {
+      if (ok) {
+        els.summaryIcon.className = "summary-icon";
+        els.summaryIcon.textContent = "✓";
+        els.summaryTitle.textContent = "Бүх систем хэвийн ажиллаж байна";
+        els.summarySub.textContent = "Hosting endpoint хариу өгч байна.";
+        els.dotBot.className = "component-dot";
+        els.stateBot.className = "component-state";
+        els.stateBot.textContent = "Operational";
+        els.dotHost.className = "component-dot";
+        els.stateHost.className = "component-state";
+        els.stateHost.textContent = "Operational";
+        els.hostSub.textContent = ENDPOINT + " хуудас амжилттай нээгдлээ.";
+        els.statLatency.textContent = ms + "ms";
+      } else {
+        els.summaryIcon.className = "summary-icon down";
+        els.summaryIcon.textContent = "!";
+        els.summaryTitle.textContent = "Endpoint хариу өгөхгүй байна";
+        els.summarySub.textContent = "Hosting endpoint одоогоор хүрэх боломжгүй байна.";
+        els.dotBot.className = "component-dot warn";
+        els.stateBot.className = "component-state warn";
+        els.stateBot.textContent = "Тодорхойгүй";
+        els.dotHost.className = "component-dot down";
+        els.stateHost.className = "component-state down";
+        els.stateHost.textContent = "Outage";
+        els.hostSub.textContent = ENDPOINT + " одоогоор хариу өгөхгүй байна.";
+        els.statLatency.textContent = "—";
+      }
+    }
+
+    async function runCheck(manual) {
+      if (manual) els.btn.disabled = true;
+      const started = performance.now();
+      let ok = false;
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 8000);
+        // no-cors: browser-ээс шууд origin-hooruu hүсэлт очиж чадвал (block/timeout/DNS алдаагүй бол)
+        // амжилттай гэж тооцно — хуудас өөрөө ачаалагдаж байгаа эсэхийг шалгах зорилготой.
+        await fetch(ENDPOINT, { method: "GET", mode: "no-cors", cache: "no-store", signal: controller.signal });
+        clearTimeout(timer);
+        ok = true;
+      } catch (e) {
+        ok = false;
+      }
+      const ms = Math.round(performance.now() - started);
+      checks.push({ ok, ms, t: new Date() });
+      setState(ok, ms);
+      renderHistory();
+      if (manual) els.btn.disabled = false;
+    }
+
+    runCheck(false);
+    setInterval(() => runCheck(false), 60000);
+  </script>
+</body>
+</html>
